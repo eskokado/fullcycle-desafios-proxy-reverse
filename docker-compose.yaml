@@ -1,16 +1,32 @@
-version: '3'
-
+version: '3.3'
 services: 
-
-  app:
+  nginx:
+    restart: always
     build: 
-      context: node
-    container_name: app
-    entrypoint: dockerize -wait tcp://db:3306 -timeout 20s docker-entrypoint.sh
+      context: ./nginx
+      dockerfile: Dockerfile.prod
+
+    image: eskokado/nginxserver:prod
+    container_name: nginxserver
+    networks: 
+      - node-network
+    ports:
+      - "8080:80"
+    depends_on: 
+       - nodeserver
+
+  nodeserver:
+    build: 
+      context: ./nodejs
+    image: eskokado/nodeserver
+    container_name: nodeserver
+    entrypoint: dockerize -wait tcp://db:3306 -timeout 20s docker-entrypoint.sh 
+    command: bash -c "npm start"
+    restart: always
     networks: 
       - node-network
     volumes: 
-      - ./node:/usr/src/app
+      - ./nodejs:/usr/src/app
     tty: true
     ports: 
       - "3000:3000"
@@ -30,9 +46,7 @@ services:
       - MYSQL_ROOT_PASSWORD=root
     networks: 
       - node-network
-
     
-
 networks: 
   node-network:
     driver: bridge      

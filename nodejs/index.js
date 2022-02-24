@@ -9,11 +9,16 @@ const config = {
 };
 const mysql = require('mysql')
 const connection = mysql.createConnection(config)
-
-const sql = `INSERT INTO people(name) values('Wesley')`
+let sql = '';
+sql = `INSERT INTO people(name) values('Edson')`
+connection.query(sql)
+sql = `INSERT INTO people(name) values('João')`
+connection.query(sql)
+sql = `INSERT INTO people(name) values('Wesley')`
+connection.query(sql)
+sql = `INSERT INTO people(name) values('Maria')`
 connection.query(sql)
 connection.end()
-
 
 app.get('/', (req,res) => {
     res.send('<h1>Full Cycle</h1>')
